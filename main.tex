@@ -23,7 +23,7 @@
     \centering
     \vspace*{1.5cm}
     
-    \includegraphics[width=8cm]{logoUGR.png}\par
+    \includegraphics[width=8cm]{img/logoUGR.png}\par
     
     \vspace{3cm}
     
@@ -81,7 +81,7 @@ Para nuestro protocolo, el diseño parte de un estado inicial único que ejecuta
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{afnd_diseño.png}
+    \includegraphics[width=0.85\textwidth]{img/afnd_diseño.png}
     \caption{Arquitectura del AFND empleando transiciones $\lambda$ para la bifurcación semántica inicial en JFLAP.}
     \label{fig:afnd_diseno}
 \end{figure}
@@ -91,7 +91,7 @@ Todo diseño abstracto requiere validación empírica. Mediante la herramienta \
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{afnd_tests.png}
+    \includegraphics[width=0.85\textwidth]{img/afnd_tests.png}
     \caption{Validación exhaustiva de las tramas mediante múltiples ejecuciones. Se certifica empíricamente que los rechazos y aceptaciones coinciden al 100\% con la lógica de negocio del protocolo.}
     \label{fig:afnd_tests}
 \end{figure}
@@ -100,14 +100,14 @@ El análisis de las trazas de ejecución permite visualizar el comportamiento in
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{traza_1.png}
+    \includegraphics[width=0.85\textwidth]{img/traza_1.png}
     \caption{Procesamiento de una trama válida (Traza 1) resolviendo el no determinismo.}
     \label{fig:traza_1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{traza_2.png}
+    \includegraphics[width=0.85\textwidth]{img/traza_2.png}
     \caption{Procesamiento de una trama válida (Traza 2) resolviendo el no determinismo.}
     \label{fig:traza_2}
 \end{figure}
@@ -119,7 +119,7 @@ Para solventar esta brecha entre abstracción y hardware, se ha aplicado el \tex
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=\textwidth]{afd_convertido.png}
+        \includegraphics[width=\textwidth]{img/afd_convertido.png}
     \end{center}
     \caption{Autómata Finito Determinista (AFD) resultante de la conversión. La topología refleja un incremento de la complejidad para eliminar ambigüedades.}
     \label{fig:afd_convertido}
@@ -132,7 +132,7 @@ Para lograrlo, se ha recurrido al algoritmo de partición (basado en clases de e
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=\textwidth]{afd_minimo.png}
+        \includegraphics[width=\textwidth]{img/afd_minimo.png}
     \end{center}
     \caption{Autómata Finito Determinista Minimal. Constituye la implementación de hardware de menor coste sin alterar la capacidad de reconocimiento del lenguaje.}
     \label{fig:afd_minimo}
@@ -143,7 +143,7 @@ Para ratificar matemáticamente que los procesos de determinización y minimizac
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{afd_minimo_tests.png}
+    \includegraphics[width=0.85\textwidth]{img/afd_minimo_tests.png}
     \caption{Re-evaluación del banco de pruebas. El comportamiento de filtrado demuestra ser absolutamente idéntico al modelo original.}
     \label{fig:afd_minimo_tests}
 \end{figure}
@@ -152,14 +152,14 @@ Las trazas adjuntas a continuación corroboran que el recorrido sobre la nueva t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{afd_minimo_trace_1.png}
+    \includegraphics[width=0.85\textwidth]{img/afd_minimo_trace_1.png}
     \caption{Lectura determinista e instantánea de una trama válida (Traza 1) en la versión minimal.}
     \label{fig:afd_minimo_trace_1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{afd_minimo_trace_2.png}
+    \includegraphics[width=0.85\textwidth]{img/afd_minimo_trace_2.png}
     \caption{Lectura determinista e instantánea de una trama válida (Traza 2) en la versión minimal.}
     \label{fig:afd_minimo_trace_2}
 \end{figure}
