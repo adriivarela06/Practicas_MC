@@ -1,5 +1,4 @@
 \documentclass[12pt,a4paper]{article}
-\usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{geometry}
 \usepackage{graphicx}
@@ -172,5 +171,67 @@ El desarrollo de esta práctica demuestra la potencia y necesidad de los Modelos
     \item \textbf{Adaptación Tecnológica y Reducción:} Mediante procesos puramente algebraicos sustentados por el software JFLAP, el modelo fue determinizado y optimizado a su mínima expresión.
 \end{enumerate}
 En conclusión, el autómata final obtenido no solo reconoce de manera exacta el protocolo original, sino que presenta la forma canónica ideal para ser compilado en analizadores léxicos, expresiones regulares de firewall o grabado directamente en la lógica cableada (FPGAs) de dispositivos de red.
+
+\newpage
+
+\section{Práctica 2: Diseño de un Sistema de Codificación y Decodificación mediante Máquinas de Mealy}
+
+\subsection{Introducción al Modelo Criptográfico}
+El diseño de algoritmos de cifrado y descifrado en flujo continuo (\textit{stream ciphers}) es una aplicación clásica de los autómatas con salida. A diferencia de un modelo de involución pura (donde el codificador y el decodificador son topológicamente idénticos, de forma análoga al comportamiento del reflector en la máquina Enigma original), el objetivo de esta práctica es implementar un sistema asimétrico en el que la decodificación requiera una topología de autómata explícitamente diseñada para invertir la lógica de transición.
+
+Para ello, hemos superado el modelo trivial de dos estados (basado únicamente en recordar la paridad del bit anterior) diseñando un autómata fundamentado en un \textbf{contador módulo 3}. El sistema cuenta con tres estados ($q_0, q_1, q_2$) y basa su avance cíclico exclusivamente en la lectura de bits '1'. Esta propiedad introduce una memoria acumulativa en el canal de transmisión, alterando el comportamiento frente a secuencias largas en función de la historia previa de la trama.
+
+\subsection{Diseño del Codificador (Autómata Transductor)}
+La arquitectura del codificador se ha modelado empleando una Máquina de Mealy en el entorno JFLAP. Las transiciones, expresadas en la forma entrada/salida ($a/b$), siguen la siguiente lógica de estados acumulativos:
+
+\begin{itemize}
+    \item \textbf{Estado $q_0$ (Modo Transparente):} El sistema no altera el mensaje. Transmite los bits sin inversión y permanece en $q_0$ ante la lectura de '0'. El salto al nivel superior $q_1$ se produce únicamente al procesar un '1'.
+    \item \textbf{Estado $q_1$ (Inversor Nivel 1):} En este estado se invierten todas las salidas ('0' se transmite como '1'). De nuevo, el avance al estado $q_2$ está condicionado exclusivamente a la entrada de un bit '1'.
+    \item \textbf{Estado $q_2$ (Inversor Nivel 2):} Similar a $q_1$, se aplican reglas de inversión. No obstante, al detectar un nuevo bit '1', el sistema completa el ciclo módulo 3, reiniciando su estado lógico de vuelta a $q_0$.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/P2/Codificador.png}
+    \caption{Topología de la Máquina de Mealy implementando el codificador, junto con la tabla de validación de ejecución múltiple.}
+    \label{fig:codificador}
+\end{figure}
+
+\subsection{Diseño del Decodificador y Propiedad Biyectiva}
+Para recuperar íntegramente la información original, el módulo receptor debe simular los estados del emisor procesando el texto cifrado. Dado que el codificador alteraba su estado basándose en los bits del texto plano original, el decodificador debe inferir estos saltos a partir del texto cifrado, lo que obliga a invertir la lógica de transición cruzando los destinos. 
+
+En la Máquina de Mealy del decodificador, observamos que las reglas de salto reconstruyen la ruta original al tiempo que las salidas deshacen las inversiones (por ejemplo, transiciones que en el emisor eran de lectura y mantenimiento, en el decodificador requieren la inversión para retornar al bit original). La topología resultante diverge de la del codificador, dotando al sistema de una robustez conceptual mayor.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/P2/Decodificador.png}
+    \caption{Máquina de Mealy del decodificador reconstruyendo exactamente las cadenas originales introducidas en la fase de cifrado.}
+    \label{fig:decodificador}
+\end{figure}
+
+\subsection{Pruebas Empíricas y Validación Integral}
+La certificación del diseño se ha verificado ejecutando las herramientas de análisis de JFLAP (\textit{Multiple Run (Transducer)}). Para evaluar el rigor del algoritmo propuesto, se seleccionaron patrones de prueba heterogéneos, incluyendo cadenas mixtas y ráfagas sostenidas de un mismo bit.
+
+\begin{enumerate}
+    \item \textbf{Prueba de Cadena Mixta (\texttt{01010}):} El codificador devuelve \texttt{01101}. Al introducir esta cadena cifrada en el decodificador, se recupera de manera exacta la secuencia \texttt{01010}.
+    \item \textbf{Prueba de Ráfaga Superior (\texttt{111000}):} Las conmutaciones sucesivas provocan un ciclo completo en el autómata. El codificador computa el cifrado como \texttt{100000}. El decodificador, al leer el tercer bit, deduce el retorno a $q_0$ y restituye satisfactoriamente \texttt{111000}.
+    \item \textbf{Prueba de Ráfaga Inferior (\texttt{000111}):} Aquí se prueba la retención del estado base antes de la alteración, arrojando el cifrado \texttt{000100}. De nuevo, el decodificador extrae exitosamente la cadena fuente \texttt{000111}.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/P2/Codificador_Input.png}
+    \caption{Ejecución múltiple del codificador verificando la transformación de las cadenas de prueba.}
+    \label{fig:codificador_input}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/P2/Decodificador_Input.png}
+    \caption{Ejecución múltiple del decodificador demostrando la recuperación exacta y biyectiva de los mensajes originales.}
+    \label{fig:decodificador_input}
+\end{figure}
+
+Estos resultados empíricos validan la total biyectividad matemática entre los autómatas. El diseño cumple su objetivo demostrando que el estado interno del flujo de cifrado permite transmisiones asimétricas sin pérdida ni corrupción del paquete de datos.
 
 \end{document}
