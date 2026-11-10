@@ -51,7 +51,6 @@
 
 \section{Práctica 1: Implementar un AFDM para verificar la parte del receptor en un protocolo de \mbox{comunicaciones}}
 
-
 \subsection{Introducción y Motivación del Protocolo}
 La validación de cadenas de datos es uno de los pilares fundamentales en el diseño de redes y comunicaciones. Desde la perspectiva de la Teoría de Autómatas y Lenguajes Formales, los paquetes de red pueden ser interpretados como palabras pertenecientes a un lenguaje regular (Tipo 3 en la Jerarquía de Chomsky), lo que permite que sean reconocidos y procesados por Autómatas Finitos con una eficiencia computacional máxima, operando en tiempo lineal $O(n)$ respecto a la longitud de la cadena.
 
@@ -95,7 +94,11 @@ Todo diseño abstracto requiere validación empírica. Mediante la herramienta \
     \label{fig:afnd_tests}
 \end{figure}
 
+\vspace{1cm}
+
 El análisis de las trazas de ejecución permite visualizar el comportamiento interno del algoritmo de retroceso (backtracking) de JFLAP, ilustrando cómo los hilos de procesamiento no válidos mueren al no encontrar transiciones lícitas, sobreviviendo únicamente el camino que conduce al estado de aceptación si la trama es sintácticamente correcta.
+
+\vspace{1cm}
 
 \begin{figure}[H]
     \centering
@@ -137,6 +140,8 @@ Para lograrlo, se ha recurrido al algoritmo de partición (basado en clases de e
     \label{fig:afd_minimo}
 \end{figure}
 
+\newpage
+
 \subsubsection{Validación de Equivalencia del Autómata Mínimo}
 Para ratificar matemáticamente que los procesos de determinización y minimización no han introducido derivas semánticas ni han alterado el lenguaje $L$ reconocido por el autómata original, se ha sometido al nuevo AFD minimal al escrutinio del banco de pruebas inicial. 
 
@@ -145,9 +150,13 @@ Para ratificar matemáticamente que los procesos de determinización y minimizac
     \includegraphics[width=0.85\textwidth]{img/P1/afd_minimo_tests.png}
     \caption{Re-evaluación del banco de pruebas. El comportamiento de filtrado demuestra ser absolutamente idéntico al modelo original.}
     \label{fig:afd_minimo_tests}
-\end{figure}
+\end{figure} 
+
+\vspace{1cm}
 
 Las trazas adjuntas a continuación corroboran que el recorrido sobre la nueva topología minimal es completamente lineal. El autómata consume un símbolo por cada transición de manera estricta y predecible, descartando paquetes erróneos inmediatamente y validando los legítimos con la máxima eficiencia.
+
+\vspace{1cm}
 
 \begin{figure}[H]
     \centering
@@ -155,6 +164,8 @@ Las trazas adjuntas a continuación corroboran que el recorrido sobre la nueva t
     \caption{Lectura determinista e instantánea de una trama válida (Traza 1) en la versión minimal.}
     \label{fig:afd_minimo_trace_1}
 \end{figure}
+
+\vspace{1cm}
 
 \begin{figure}[H]
     \centering
@@ -215,6 +226,9 @@ La certificación del diseño se ha verificado ejecutando las herramientas de an
 \begin{enumerate}
     \item \textbf{Prueba de Cadena Mixta (\texttt{01010}):} El codificador devuelve \texttt{01101}. Al introducir esta cadena cifrada en el decodificador, se recupera de manera exacta la secuencia \texttt{01010}.
     \item \textbf{Prueba de Ráfaga Superior (\texttt{111000}):} Las conmutaciones sucesivas provocan un ciclo completo en el autómata. El codificador computa el cifrado como \texttt{100000}. El decodificador, al leer el tercer bit, deduce el retorno a $q_0$ y restituye satisfactoriamente \texttt{111000}.
+    
+    \newpage
+    
     \item \textbf{Prueba de Ráfaga Inferior (\texttt{000111}):} Aquí se prueba la retención del estado base antes de la alteración, arrojando el cifrado \texttt{000100}. De nuevo, el decodificador extrae exitosamente la cadena fuente \texttt{000111}.
 \end{enumerate}
 
@@ -233,5 +247,14 @@ La certificación del diseño se ha verificado ejecutando las herramientas de an
 \end{figure}
 
 Estos resultados empíricos validan la total biyectividad matemática entre los autómatas. El diseño cumple su objetivo demostrando que el estado interno del flujo de cifrado permite transmisiones asimétricas sin pérdida ni corrupción del paquete de datos.
+
+\subsection{Conclusiones Finales}
+El desarrollo de esta segunda práctica ha evidenciado la versatilidad de las Máquinas de Mealy (autómatas con salida) para el diseño de sistemas criptográficos de flujo continuo. El trabajo realizado nos permite concluir lo siguiente:
+\begin{enumerate}
+    \item \textbf{Gestión de Memoria con Estados:} Se superaron los cifradores básicos mediante la implementación de un contador módulo 3 condicionado. Esto demostró cómo el autómata puede "recordar" el histórico de la trama (los bits '1' leídos) para alterar su comportamiento de forma dinámica a lo largo de secuencias extensas.
+    \item \textbf{Diseño Asimétrico Integral:} Se logró construir un modelo donde el decodificador no es un mero espejo topológico del emisor, sino un transductor invertido lógicamente, capaz de inferir los saltos de estado basándose exclusivamente en el texto cifrado.
+    \item \textbf{Robustez Matemática:} Las pruebas empíricas mediante \textit{Multiple Run} confirmaron empíricamente la propiedad biyectiva del sistema diseñado. Quedó garantizado que cualquier secuencia introducida es recuperable sin pérdida de información, falsos positivos ni desincronización de estados.
+\end{enumerate}
+En síntesis, este modelo reafirma que los autómatas finitos transductores representan una base algorítmica óptima y altamente eficiente para la implementación en hardware de sistemas de codificación y decodificación en las comunicaciones digitales.
 
 \end{document}
