@@ -1,0 +1,10 @@
+COLOR      rojo
+BAJA
+REPITE 4   [
+  AVANZA 50
+  TELETRANSPORTA 100
+  REPITE 2 [
+    GIRA 45
+  ]
+]
+    EXPLOTA 99

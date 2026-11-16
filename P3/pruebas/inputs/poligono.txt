@@ -1,0 +1,7 @@
+COLOR azul
+BAJA
+REPITE 6 [
+  AVANZA 60
+  GIRA 60
+]
+SUBE

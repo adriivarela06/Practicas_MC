@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.00 0.00 85.36 120.71">
+  <line x1="0.00" y1="0.00" x2="50.00" y2="0.00" stroke="red" />
+  <line x1="50.00" y1="0.00" x2="85.36" y2="35.36" stroke="red" />
+  <line x1="85.36" y1="35.36" x2="85.36" y2="85.36" stroke="red" />
+  <line x1="85.36" y1="85.36" x2="50.00" y2="120.71" stroke="red" />
+</svg>
