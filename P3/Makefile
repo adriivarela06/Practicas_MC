@@ -6,8 +6,8 @@ CFLAGS = -lm
 # Carpetas
 SRC_DIR = src
 BIN_DIR = bin
-TEST_IN_DIR = pruebas/inputs
-TEST_OUT_DIR = pruebas/outputs
+TEST_IN_DIR = pruebas
+TEST_OUT_DIR = img
 
 # Archivos
 LEX_FILE = $(SRC_DIR)/tortuga.l

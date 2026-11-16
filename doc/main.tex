@@ -22,7 +22,7 @@
     \centering
     \vspace*{1.5cm}
     
-    \includegraphics[width=8cm]{img/logoUGR.png}\par
+    \includegraphics[width=8cm]{logoUGR.png}\par
     
     \vspace{3cm}
     
@@ -79,7 +79,7 @@ Para nuestro protocolo, el diseño parte de un estado inicial único que ejecuta
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/afnd_diseño.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/afnd_diseño.png}
     \caption{Arquitectura del AFND empleando transiciones $\lambda$ para la bifurcación semántica inicial en JFLAP.}
     \label{fig:afnd_diseno}
 \end{figure}
@@ -89,7 +89,7 @@ Todo diseño abstracto requiere validación empírica. Mediante la herramienta \
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/afnd_tests.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/afnd_tests.png}
     \caption{Validación exhaustiva de las tramas mediante múltiples ejecuciones. Se certifica empíricamente que los rechazos y aceptaciones coinciden al 100\% con la lógica de negocio del protocolo.}
     \label{fig:afnd_tests}
 \end{figure}
@@ -102,14 +102,14 @@ El análisis de las trazas de ejecución permite visualizar el comportamiento in
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/traza_1.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/traza_1.png}
     \caption{Procesamiento de una trama válida (Traza 1) resolviendo el no determinismo.}
     \label{fig:traza_1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/traza_2.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/traza_2.png}
     \caption{Procesamiento de una trama válida (Traza 2) resolviendo el no determinismo.}
     \label{fig:traza_2}
 \end{figure}
@@ -121,7 +121,7 @@ Para solventar esta brecha entre abstracción y hardware, se ha aplicado el \tex
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=\textwidth]{img/P1/afd_convertido.png}
+        \includegraphics[width=\textwidth]{../P1/img/afd_convertido.png}
     \end{center}
     \caption{Autómata Finito Determinista (AFD) resultante de la conversión. La topología refleja un incremento de la complejidad para eliminar ambigüedades.}
     \label{fig:afd_convertido}
@@ -134,7 +134,7 @@ Para lograrlo, se ha recurrido al algoritmo de partición (basado en clases de e
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=\textwidth]{img/P1/afd_minimo.png}
+        \includegraphics[width=\textwidth]{../P1/img/afd_minimo.png}
     \end{center}
     \caption{Autómata Finito Determinista Minimal. Constituye la implementación de hardware de menor coste sin alterar la capacidad de reconocimiento del lenguaje.}
     \label{fig:afd_minimo}
@@ -147,7 +147,7 @@ Para ratificar matemáticamente que los procesos de determinización y minimizac
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/afd_minimo_tests.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/afd_minimo_tests.png}
     \caption{Re-evaluación del banco de pruebas. El comportamiento de filtrado demuestra ser absolutamente idéntico al modelo original.}
     \label{fig:afd_minimo_tests}
 \end{figure} 
@@ -160,7 +160,7 @@ Las trazas adjuntas a continuación corroboran que el recorrido sobre la nueva t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/afd_minimo_trace_1.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/afd_minimo_trace_1.png}
     \caption{Lectura determinista e instantánea de una trama válida (Traza 1) en la versión minimal.}
     \label{fig:afd_minimo_trace_1}
 \end{figure}
@@ -169,7 +169,7 @@ Las trazas adjuntas a continuación corroboran que el recorrido sobre la nueva t
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{img/P1/afd_minimo_trace_2.png}
+    \includegraphics[width=0.85\textwidth]{../P1/img/afd_minimo_trace_2.png}
     \caption{Lectura determinista e instantánea de una trama válida (Traza 2) en la versión minimal.}
     \label{fig:afd_minimo_trace_2}
 \end{figure}
@@ -203,7 +203,7 @@ La arquitectura del codificador se ha modelado empleando una Máquina de Mealy e
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/P2/Codificador.png}
+    \includegraphics[width=\textwidth]{../P2/img/Codificador.png}
     \caption{Topología de la Máquina de Mealy implementando el codificador, junto con la tabla de validación de ejecución múltiple.}
     \label{fig:codificador}
 \end{figure}
@@ -215,7 +215,7 @@ En la Máquina de Mealy del decodificador, observamos que las reglas de salto re
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/P2/Decodificador.png}
+    \includegraphics[width=\textwidth]{../P2/img/Decodificador.png}
     \caption{Máquina de Mealy del decodificador reconstruyendo exactamente las cadenas originales introducidas en la fase de cifrado.}
     \label{fig:decodificador}
 \end{figure}
@@ -234,20 +234,19 @@ La certificación del diseño se ha verificado ejecutando las herramientas de an
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/P2/Codificador_Input.png}
+    \includegraphics[width=\textwidth]{../P2/img/Codificador_Input.png}
     \caption{Ejecución múltiple del codificador verificando la transformación de las cadenas de prueba.}
     \label{fig:codificador_input}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{img/P2/Decodificador_Input.png}
+    \includegraphics[width=\textwidth]{../P2/img/Decodificador_Input.png}
     \caption{Ejecución múltiple del decodificador demostrando la recuperación exacta y biyectiva de los mensajes originales.}
     \label{fig:decodificador_input}
 \end{figure}
 
 Estos resultados empíricos validan la total biyectividad matemática entre los autómatas. El diseño cumple su objetivo demostrando que el estado interno del flujo de cifrado permite transmisiones asimétricas sin pérdida ni corrupción del paquete de datos.
-
 \subsection{Conclusiones Finales}
 El desarrollo de esta segunda práctica ha evidenciado la versatilidad de las Máquinas de Mealy (autómatas con salida) para el diseño de sistemas criptográficos de flujo continuo. El trabajo realizado nos permite concluir lo siguiente:
 \begin{enumerate}
