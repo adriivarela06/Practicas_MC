@@ -65,6 +65,8 @@ El sistema opera sobre un alfabeto binario $\Sigma = \{0, 1\}$. Las reglas forma
 \end{itemize}
 Cualquier cadena que infrinja la correspondencia de los prefijos, que carezca de su respectivo patrón interno o que termine con una secuencia distinta al sufijo \texttt{011}, debe ser rechazada y descartada inmediatamente por el módulo receptor.
 
+\newpage
+
 \subsection{Diseño del Autómata Finito No Determinista (AFND)}
 El primer paso en el flujo de diseño lógico del receptor ha consistido en la construcción de un Autómata Finito No Determinista (AFND). El uso del no determinismo representa una ventaja incalculable durante la fase de conceptualización humana, ya que permite modelar escenarios de bifurcación mediante transiciones nulas (transiciones $\lambda$ o $\epsilon$). Estas transiciones posibilitan que el autómata cambie de estado sin consumir ningún símbolo de la cadena de entrada, delegando en el sistema de cómputo subyacente la evaluación de múltiples caminos paralelos.
 
@@ -129,6 +131,8 @@ Para solventar esta brecha entre abstracción y hardware, se ha aplicado el \tex
 
 \subsection{Optimización mediante Minimización}
 El algoritmo de subconjuntos garantiza el determinismo, pero a menudo produce autómatas sobredimensionados que contienen estados redundantes o inaccesibles desde el estado inicial. En el diseño de redes, minimizar la matriz de transiciones es imperativo para reducir el uso de memoria caché y optimizar los ciclos de CPU durante el análisis de paquetes.
+
+\bigskip
 
 Para lograrlo, se ha recurrido al algoritmo de partición (basado en clases de equivalencia). JFLAP, mediante su herramienta \textit{Minimize DFA}, separa iterativamente los estados finales de los no finales y continúa subdividiendo estos conjuntos basándose en el comportamiento de las transiciones. Si dos o más estados derivan en las mismas respuestas ante el mismo conjunto de entradas futuras, se consideran indistinguibles y se fusionan en un único estado lógico.
 
@@ -247,6 +251,7 @@ La certificación del diseño se ha verificado ejecutando las herramientas de an
 \end{figure}
 
 Estos resultados empíricos validan la total biyectividad matemática entre los autómatas. El diseño cumple su objetivo demostrando que el estado interno del flujo de cifrado permite transmisiones asimétricas sin pérdida ni corrupción del paquete de datos.
+
 \subsection{Conclusiones Finales}
 El desarrollo de esta segunda práctica ha evidenciado la versatilidad de las Máquinas de Mealy (autómatas con salida) para el diseño de sistemas criptográficos de flujo continuo. El trabajo realizado nos permite concluir lo siguiente:
 \begin{enumerate}
@@ -255,5 +260,215 @@ El desarrollo de esta segunda práctica ha evidenciado la versatilidad de las M�
     \item \textbf{Robustez Matemática:} Las pruebas empíricas mediante \textit{Multiple Run} confirmaron empíricamente la propiedad biyectiva del sistema diseñado. Quedó garantizado que cualquier secuencia introducida es recuperable sin pérdida de información, falsos positivos ni desincronización de estados.
 \end{enumerate}
 En síntesis, este modelo reafirma que los autómatas finitos transductores representan una base algorítmica óptima y altamente eficiente para la implementación en hardware de sistemas de codificación y decodificación en las comunicaciones digitales.
+
+\newpage
+
+% =======================================================
+%                    PRÁCTICA 3
+% =======================================================
+\section{Práctica 3: Construcción de un Analizador Léxico con Flex para \mbox{Generación} de Gráficos SVG}
+
+\subsection{Introducción al Lenguaje de Tortuga}
+En esta tercera práctica se ha abordado la fase léxica del desarrollo de procesadores de lenguajes mediante el uso de la herramienta \textbf{Flex}. El objetivo central ha sido construir un escáner capaz de procesar un Lenguaje de Dominio Específico (DSL) basado en la clásica geometría de la ``Tortuga'' (inspirado en el lenguaje Logo) e interpretar sus comandos para traducirlos, de forma directa, a un archivo de gráficos vectoriales escalables (SVG).
+
+El conjunto de instrucciones a evaluar incluye acciones de traslación (\texttt{AVANZA}), rotación (\texttt{GIRA}), control de trazado (\texttt{SUBE}, \texttt{BAJA}), ajustes estilísticos (\texttt{COLOR}) y estructuras iterativas básicas sin anidamiento (\texttt{REPITE}).
+
+\subsection{Diseño del Analizador Léxico (Patrones y Estados)}
+Bajo el principio fundamental de diseño léxico que dicta que \textit{``las reglas reconocen, las acciones calculan''}, la estructura del archivo Flex (\texttt{tortuga.l}) se ha dividido de manera que la carga del emparejamiento semántico recae sobre las Expresiones Regulares, mientras que el cálculo trigonométrico y el ensamblado del archivo XML (SVG) se delega a las funciones incrustadas en código C.
+
+\subsubsection{Gestión de Iteraciones mediante Condiciones de Arranque}
+Para resolver la problemática del comando \texttt{REPITE}, se ha hecho un uso avanzado de las \textbf{condiciones de arranque} proporcionadas por Flex. Dado que el flujo interno del escáner está diseñado para consumir caracteres de manera secuencial hacia adelante, este no posee la capacidad nativa de retroceder el puntero de lectura para volver a evaluar un bloque de código iterativo.
+
+Para sortear esta limitación computacional, se ha implementado un estado exclusivo denotado como \texttt{\%x BUCLE}. Cuando el escáner identifica la firma de apertura de un ciclo (\texttt{REPITE [N] [}), transiciona desde su estado inicial hacia este estado aislado. Durante la fase de bucle, las reglas regulares no ejecutan acciones de dibujado inmediato; en su lugar, actúan como recolectoras, almacenando los tokens reconocidos junto con sus argumentos en un array de estructuras internas. Al detectar el carácter de cierre (\texttt{]}), el autómata retorna a la condición inicial y dispara un ciclo en C que ejecuta los comandos guardados el número de veces estipulado.
+
+\subsubsection{Definición de Expresiones Regulares Clave}
+Para garantizar la captura robusta de los comandos, se han empleado diversas estrategias en la sección de reglas formales:
+\begin{itemize}
+    \item \textbf{Flexibilidad de Casos:} Se ha invocado la directiva \texttt{\%option case-insensitive} para asegurar que comandos como \texttt{AVANZA}, \texttt{Avanza} o \texttt{avanza} sean reconocidos por el mismo patrón abstracto.
+    \item \textbf{Filtrado de Argumentos:} Se ha definido una macro estandarizada \texttt{NUM -?[0-9]+} para interceptar tanto longitudes de trazado positivas como ángulos de giro negativos.
+    \item \textbf{Cajones de Sastre:} Se han implementado dos reglas escoba mediante el prefijo de comodín \texttt{<*>}. La primera descarta silenciosamente blancos y tabulaciones, garantizando que no generen interferencias gráficas. La segunda captura secuencias de caracteres no reconocidos, deteniéndose ante cualquier error léxico (como un comando mal escrito) e imprimiendo la advertencia correspondiente mediante el registro de línea mantenido automáticamente por \texttt{yylineno}.
+\end{itemize}
+
+\subsection{Lógica de Acciones y Ensamblado de Salida en C}
+La carga semántica del proyecto radica en el bloque principal en C incluido dentro del fichero Flex.
+
+\begin{enumerate}
+    \item \textbf{Estado de la Tortuga:} Se han declarado variables globales que actúan como la memoria posicional del puntero de dibujo: coordenadas euclidianas ($x$, $y$), la inclinación actual (\texttt{angulo}), el color del trazo (\texttt{color}) y una bandera lógica (\texttt{lapiz}) que determina si los movimientos generan huella vectorial.
+    \item \textbf{Cálculo Trigonométrico:} Al procesar el comando \texttt{AVANZA d}, la función en C efectúa un cambio de base transformando el avance lineal en incrementos cartesianos, aplicando las fórmulas trigonométricas $x_{nueva} = x + d \cdot \cos(\theta)$ y $y_{nueva} = y + d \cdot \sin(\theta)$, con el ángulo $\theta$ previamente convertido a radianes.
+    \item \textbf{Generación del Archivo Vectorial:} Cada avance con el lápiz activo genera en memoria una etiqueta \texttt{<line>} propia del estándar SVG. En paralelo, se evalúan constantemente los máximos y mínimos dimensionales para computar, al término de la lectura del fichero, los atributos correctos de encuadre en la directiva \texttt{viewBox}.
+\end{enumerate}
+
+\subsection{Automatización del Entorno (Makefile)}
+En entornos UNIX, el flujo de procesamiento léxico involucra varios eslabones de compilación (desde la especificación \texttt{.l} hasta el binario ejecutable final). Para orquestar esto de forma transparente y facilitar la labor de evaluación por parte del profesorado, se ha diseñado un \texttt{Makefile} estructurado con reglas explícitas que automatiza tanto la compilación como la ejecución de las pruebas.
+
+\subsubsection{Estructura de Directorios}
+Para una correcta evaluación, el proyecto se entrega estructurado de forma modular dentro de la carpeta \texttt{P3}. La disposición inicial de los ficheros en el archivo comprimido ZIP es la siguiente:
+\begin{itemize}
+    \item \textbf{\texttt{src/}:} Contiene el código fuente original de Flex (\texttt{tortuga.l}).
+    \item \textbf{\texttt{pruebas/}:} Almacena los archivos de texto con los comandos de prueba (\texttt{poligono.txt} y \texttt{errores.txt}).
+    \item \textbf{\texttt{Makefile}:} Archivo de orquestación ubicado en la raíz de la carpeta \texttt{P3}.
+\end{itemize}
+\newpage
+\textbf{Nota sobre la generación de carpetas:} Las carpetas de salida (\texttt{img/} para los gráficos SVG y \texttt{bin/} para los ejecutables) se omiten intencionadamente en la entrega. El propio \texttt{Makefile} incluye una directiva preparatoria que se encarga de crear estos directorios automáticamente en el equipo del evaluador antes de realizar la compilación, manteniendo un entorno limpio.
+
+A continuación se detalla el código del \texttt{Makefile} utilizado en el proyecto:
+
+\begin{verbatim}
+# Definición de variables
+FLEX = flex
+CC = gcc
+CFLAGS = -lm
+
+# Carpetas
+SRC_DIR = src
+BIN_DIR = bin
+TEST_IN_DIR = pruebas
+TEST_OUT_DIR = img
+
+# Archivos
+LEX_FILE = $(SRC_DIR)/tortuga.l
+C_FILE = $(SRC_DIR)/lex.yy.c
+EXEC = $(BIN_DIR)/tortuga
+
+# Archivos de prueba
+TEST1_IN = $(TEST_IN_DIR)/poligono.txt
+TEST1_OUT = $(TEST_OUT_DIR)/poligono.svg
+TEST2_IN = $(TEST_IN_DIR)/errores.txt
+TEST2_OUT = $(TEST_OUT_DIR)/errores.svg
+
+# Regla por defecto: compilar y ejecutar todo
+all: prepare $(EXEC) run
+
+# Crear directorios si no existen (separados línea a línea para evitar fusiones)
+prepare:
+	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(SRC_DIR)
+	@mkdir -p $(TEST_IN_DIR)
+	@mkdir -p $(TEST_OUT_DIR)
+
+# Regla para compilar el ejecutable
+$(EXEC): $(C_FILE)
+	@echo "Compilando el ejecutable de C..."
+	$(CC) $(C_FILE) -o $(EXEC) $(CFLAGS)
+
+# Regla para generar el .c con flex
+$(C_FILE): $(LEX_FILE)
+	@echo "Ejecutando Flex..."
+	$(FLEX) -o $(C_FILE)    $(LEX_FILE)
+
+# Regla para ejecutar las pruebas
+run: $(EXEC)
+	@echo "Ejecutando pruebas..."
+	@if [ -f "$(TEST1_IN)" ]; then \
+		./$(EXEC) "$(TEST1_IN)" > "$(TEST1_OUT)"; \
+		echo " -> $(TEST1_OUT) generado."; \
+	else \
+		echo "Aviso: No se encontró $(TEST1_IN)"; \
+	fi
+	@if [ -f "$(TEST2_IN)" ]; then \
+		./$(EXEC) "$(TEST2_IN)" > "$(TEST2_OUT)"; \
+		echo " -> $(TEST2_OUT) generado."; \
+	else \
+		echo "Aviso: No se encontró $(TEST2_IN)"; \
+	fi
+
+# Limpiar archivos generados y BORRAR carpetas bin e img
+clean:
+	@echo "Limpiando archivos y carpetas generadas..."
+	rm -f $(C_FILE)
+	rm -rf $(BIN_DIR)
+	rm -rf $(TEST_OUT_DIR)
+
+# Declarar que clean, prepare, run, all no son archivos
+.PHONY: all prepare clean run
+\end{verbatim}
+
+\subsubsection{Explicación de las directivas de compilación}
+Para compilar y testear el proyecto, únicamente es necesario abrir una terminal en la raíz y ejecutar comandos básicos de \texttt{make}. La lógica de dependencias está diseñada para agilizar el flujo de trabajo:
+\begin{itemize}
+    \item \textbf{\texttt{make} o \texttt{make all}:} Es la regla por defecto. Asegura la estructura de directorios (\texttt{prepare}), invoca a Flex para traducir el código léxico, lo compila con GCC enlazando estáticamente la librería matemática (\texttt{-lm}) y finalmente ejecuta las simulaciones sobre los archivos de prueba para escupir automáticamente los SVG (\texttt{run}).
+    \item \textbf{\texttt{make clean}:} Elimina los artefactos autogenerados (como \texttt{lex.yy.c}) y borra por completo las carpetas de salida (\texttt{bin/} e \texttt{img/}), devolviendo el directorio a su estado de desarrollo inicial perfecto para ser comprimido y entregado.
+    \item \textbf{Gestión de dependencias temporales:} Las reglas \texttt{\$(EXEC)} y \texttt{\$(C\_FILE)} observan los cambios en el código. Si se modifica \texttt{tortuga.l}, el \texttt{Makefile} reconstruye todo el árbol. Esto ahorra valiosos ciclos de compilación.
+\end{itemize}
+
+\newpage
+\subsection{Verificación Empírica y Casos de Prueba}
+
+El sistema resultante se ha sometido a validación mediante dos flujos de texto preestablecidos.
+
+\subsubsection{Caso 1: Trazado de Geometría Regular}
+Se sometió el analizador al documento de entrada \texttt{poligono.txt}, cuyo código invoca la construcción iterada de un polígono de seis lados mediante el comando repetitivo.
+
+\begin{verbatim}
+COLOR azul
+BAJA
+REPITE 6 [
+  AVANZA 60
+  GIRA 60
+]
+SUBE
+\end{verbatim}
+
+La salida de la compilación originó satisfactoriamente el archivo \texttt{poligono.svg}, logrando empaquetar de forma transparente las coordenadas trigonométricas necesarias para renderizar la figura descrita.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{../P3/img/poligono.png}
+    \caption{Resultado visual del archivo SVG generado tras la evaluación del primer lote de prueba, demostrando un procesamiento matemático correcto de los bucles léxicos.}
+    \label{fig:prueba1}
+\end{figure}
+
+\newpage
+
+\subsubsection{Caso 2: Tolerancia y Gestión de Errores}
+El segundo bloque de validación, \texttt{errores.txt}, fue inyectado con el propósito explícito de comprobar la solidez del autómata frente a comportamientos indebidos:
+
+\begin{verbatim}
+COLOR      rojo
+BAJA
+REPITE 4   [
+  AVANZA 50
+  TELETRANSPORTA 100
+  REPITE 2 [
+    GIRA 45
+  ]
+]
+    EXPLOTA 99
+\end{verbatim}
+
+Ante esta entrada, el sistema se comportó de manera estrictamente robusta. En primer lugar, los identificadores anómalos (\texttt{TELETRANSPORTA} y \texttt{EXPLOTA}) fueron correctamente redirigidos hacia el cajón de sastre de error, alertando al usuario en la salida estándar de errores (stderr) con la línea exacta de la infracción. En segundo lugar, al intentar anidar un bucle de repetición dentro de otro, el autómata activó la validación estática incorporada en su estado \texttt{BUCLE}, impidiendo el cómputo y emitiendo un mensaje de rechazo de sintaxis sin corromper el fichero de salida vectorial hasta el momento de la interrupción.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{../P3/img/errores.png}
+    \caption{Captura del trazo interrumpido renderizado en \texttt{errores.svg}. Se evidencia que el escáner dibuja todo el código legítimo antes de interceptar el intento de anidamiento ilegal.}
+    \label{fig:prueba2}
+\end{figure}
+
+\newpage
+
+\subsection{Conclusiones Finales}
+Esta tercera práctica ha consolidado los conceptos algorítmicos teóricos relativos a las máquinas de estado mediante una aplicación práctica directa de análisis de secuencias. Se ha puesto de manifiesto que los lenguajes regulares, aunque poseen limitaciones matemáticas demostradas en su jerarquía (como la incapacidad estructural para contar balanceo de anidamientos), pueden ser dotados de cierta persistencia temporal en memoria mediante el uso de estados exclusivos en la herramienta \textbf{Flex}. Esta sinergia entre el reconocimiento algorítmico rápido de patrones en el archivo \texttt{.l} y la computación lógica delegada al código empotrado en C, ha permitido construir un motor gráfico de procesamiento integral robusto y plenamente operativo.
+
+\newpage
+
+% =======================================================
+%                    SECCIÓN 4
+% =======================================================
+\section{Valoración Global y Perspectivas Profesionales}
+
+A lo largo de este cuatrimestre, el desarrollo de estas prácticas nos ha permitido aterrizar conceptos que, en las primeras clases, parecían pura teoría matemática. Pasar de los esquemas en la pizarra a diseñar la lógica directamente mediante software ha sido clave para entender realmente qué ocurre ``bajo el capó'' de los sistemas que utilizamos a diario. 
+
+Durante las dos primeras prácticas, vimos de forma muy visual con JFLAP que los autómatas y las máquinas de Mealy no son simples grafos, sino el núcleo lógico que hay detrás de un protocolo de red o de un sistema básico de cifrado. Sin embargo, ha sido con la tercera práctica donde hemos notado el salto definitivo hacia la programación real. Utilizar Flex nos ha obligado a unir la potencia de las expresiones regulares con código C puro, enseñándonos que el autómata es el que reconoce el texto, pero es nuestra lógica la que realmente trabaja con él.
+
+Siendo realistas, es muy poco probable que en nuestro futuro puesto de trabajo nos pidan dibujar un autómata finito a mano o diseñar una máquina de Mealy desde cero para hacer una aplicación web. Sin embargo, la forma de pensar que hemos entrenado aquí tiene una aplicación directa y muy demandada en la empresa actual:
+
+\begin{itemize}
+    \item \textbf{Procesamiento de datos y Expresiones Regulares:} En sectores como la Ciberseguridad, el Big Data o el trabajo de sistemas (DevOps), lidiar con gigabytes de \textit{logs} buscando errores o direcciones IP es el pan de cada día. Entender cómo funciona un motor léxico nos permite escribir reglas eficientes y evitar cuellos de botella que pueden llegar a tumbar un servidor comercial.
+    \item \textbf{Máquinas de Estado en el desarrollo moderno:} El concepto de autómata se usa constantemente para gestionar el estado de aplicaciones complejas. Ya sea controlando la interfaz en un \textit{frontend} moderno con React, diseñando el comportamiento de un personaje en un videojuego, o validando los pasos de un carrito de la compra, pensar en ``estados'' y ``transiciones'' es lo que evita que acabemos escribiendo un código espagueti lleno de condicionales.
+    \item \textbf{Automatización y herramientas propias:} Haber programado un intérprete (como el de la Tortuga a SVG) nos da la base para crear pequeños lenguajes o \textit{scripts} de parseo que automaticen tareas repetitivas en el trabajo.
+\end{itemize}
+
+En definitiva, aunque \textit{Modelos de Computación} es una asignatura con una fuerte carga teórica, el laboratorio nos ha ayudado a ``pensar como el compilador''. Nos llevamos la capacidad de modelar problemas complejos dividiéndolos en piezas lógicas, una base técnica que consideramos indispensable para nuestra futura etapa como ingenieros de software.
 
 \end{document}

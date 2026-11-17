@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30.00 0.00 120.00 103.92">
-  <line x1="0.00" y1="0.00" x2="60.00" y2="0.00" stroke="blue" />
-  <line x1="60.00" y1="0.00" x2="90.00" y2="51.96" stroke="blue" />
-  <line x1="90.00" y1="51.96" x2="60.00" y2="103.92" stroke="blue" />
-  <line x1="60.00" y1="103.92" x2="0.00" y2="103.92" stroke="blue" />
-  <line x1="0.00" y1="103.92" x2="-30.00" y2="51.96" stroke="blue" />
-  <line x1="-30.00" y1="51.96" x2="-0.00" y2="0.00" stroke="blue" />
-</svg>
