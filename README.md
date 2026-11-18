@@ -220,7 +220,3 @@ Practicas_MC/
     ├── logoUGR.png
     └── Prácticas_MC_26_27.pdf
 ```
-
-## Licencia
-
-Este repositorio contiene material académico desarrollado para una asignatura universitaria. Se recomienda consultar con los autores antes de reutilizarlo fuera del contexto académico.
